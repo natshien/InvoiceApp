@@ -31,9 +31,12 @@ class MyFirm extends React.Component {
             <h4>Coders Lab Sp.z o.o.<br/>
                 ul. Prosta 51<br/>
                 00-838 Warszawa<br/>
-                NIP: 5213650730
+                NIP: 5213650730<br/>   
             </h4>
-            <br />
+            <h5>
+            Nr konta bankowego do przelewów:<br/>
+            21 1090 1870 0000 0001 3272 1053
+            </h5>
             <div className="form-wrapper">
             <form onSubmit={this.submitPayment} className="selectPayment">
                 <h4>Sposób płatności:</h4>

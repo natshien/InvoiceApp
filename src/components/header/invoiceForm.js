@@ -13,12 +13,12 @@ class InvoiceNumber extends React.Component {
     render() {
      //Numer i format faktury w h3: /*{this.state.id} /this.state.date.toLocaleMonthString()+1/this.state.date.toLocaleYearString() */
 
-        return (<div className="invoiceNum"> 
-            <h3>Faktura VAT Nr: </h3>
+        return <div className="invoiceNum"> 
+            <h3>Faktura VAT Nr: {this.state.id}</h3>
             <h3>ORYGINAŁ</h3>
             <h4>Data wystawienia faktury: {this.state.date.toLocaleDateString()}</h4>
-            <h4>Termin płatności:{this.state.duedate} </h4>
-        </div>);
+            <h4>Termin płatności: {this.state.duedate} </h4>
+        </div>;
     }
 }
 
@@ -53,7 +53,7 @@ class BuyerData extends React.Component {
     }
     
     render() { 
-        return (<div className="buyerForm">
+        return <div className="buyerForm">
             <h4>Dane Nabywcy</h4>
             <form onSubmit={this.handleSubmit}>
             <label>Nazwa firmy:</label><br/>
@@ -64,7 +64,7 @@ class BuyerData extends React.Component {
             <input onChange={this.changeNIP} name="nip" value={this.state.nip}></input><br/><br/>
             <button type="submit">Zatwierdź dane</button>
             </form>
-        </div>)
+        </div>
     }
 }
 

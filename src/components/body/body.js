@@ -1,11 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
+import AddItemsForm from './addItemsForm';
+
 
 class Body extends React.Component {
-  state = {  }
+  state = { 
+
+  }
   render() { 
-    return <h1>BODY</h1>
+    return <div className="body-wrapper">
+    <h1>BODY</h1>
+    <AddItemsForm />
+    </div>
   }
 }
  
