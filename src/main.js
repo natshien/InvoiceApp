@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, combineReducers } from 'redux'
 import { Provider, connect } from 'react-redux';
@@ -6,106 +6,59 @@ import headerReducer from './reducers/headerReducer';
 import bodyReducer from './reducers/bodyReducer';
 import footerReducer from './reducers/footerReducer';
 import invoicesReducer from './reducers/invoicesReducer';
-import Header from './components/header/header.js';
-import Body from './components/body/body.js';
-import Footer from './components/footer/footer.js';
+import singleInvoiceReducer from './reducers/singleInvoiceReducer';
+import Header from './components/header/header';
+import Body from './components/body/body';
+import Footer from './components/footer/footer';
+import Invoice from './invoices/invoice';
 import firebase from './config/firebase';
 const db = firebase.firestore();
 
 
 const reducers = combineReducers({
-  header: headerReducer,
-  body: bodyReducer,
-  footer: footerReducer,
-  invoices: invoicesReducer
+  invoices: invoicesReducer,
+  single: singleInvoiceReducer
 });
 
 const store = createStore(reducers);
 
+class App extends Component {
 
-
-class App extends React.Component {
-   constructor(props) {
-   super(props);
-
-   }
-
-  handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Invoice:", this.props.invoice);
-
-    const userRef = db.collection('invoices').add({
-      invoice: this.props.invoice
-    });
+  state = {
+    view: false
   }
 
-   render(){
-     console.log("App", this.props.invoices);
-
-    let list = this.props.invoices.map((e,i) => {
-      return <li key={i}>{e.invoice.header &&  e.invoice.header.NIP}</li>
+  handleInovoice = () => {
+    this.setState({
+      view: true
     })
-
-     return (
-       <>
-        <form onSubmit={this.handleSubmit}>
-          <Header />
-          <Body />
-          <Footer />
-          <button type="submit">Zapisz</button>
-        </form>
-        <h1>Lista</h1>
-        <ul>
-          {list}
-        </ul>
-      </>
-
-     )
-   }
-
-   componentDidMount () {
-     db.collection("invoices")
-     .get()
-     .then((querySnapshot) => {
-         let data = [];
-         querySnapshot.forEach((doc) => {
-             // doc.data() is never undefined for query doc snapshots
-             console.log(doc.id, " => ", doc.data());
-             data = [...data, doc.data()];
-
-         });
-         console.log("Data:", data);
-         this.props.getInvoices(data);
-     })
-     .catch(function(error) {
-         console.log("Error getting documents: ", error);
-     });
-   }
- }
-
-function mapStateToProps(state) {
-  return {
-    invoices: state.invoices,
-    invoice: {header: state.header, body: state.body, footer: state.footer}
   }
-}
 
- function mapDispatch (dispatch) {
-  return {
-    getInvoices (invoices) {
-      dispatch({ type: 'GET_INVOICES', payload: invoices })
+
+  render() {
+
+    if (this.state.view) {
+      return <Invoice />
     }
+
+
+    return (
+      <div>
+
+        <button onClick={this.handleInovoice}>Stwórz fakturę</button>
+        
+      </div>
+    )
   }
 }
 
-const AppData = connect(mapStateToProps, mapDispatch)(App);
 
 
 document.addEventListener("DOMContentLoaded", function(){
 
    ReactDOM.render(
      <Provider store = {store}>
-       <AppData />
+       <App />
      </Provider>,
      document.querySelector('#app')
    )

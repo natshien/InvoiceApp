@@ -11,13 +11,13 @@ class InvoiceNumber extends React.Component {
     }
 
     render() {
-     //Numer i format faktury w h3: /*{this.state.id} /this.state.date.toLocaleMonthString()+1/this.state.date.toLocaleYearString() */
+        <h2> Fakuta Nr: nextNumber /{newDate.toLocaleMonthString() + 1}/{newDate.toLocaleYearString()}</h2>
 
         return <div className="invoiceNum"> 
-            <h3>Faktura VAT Nr: {this.state.id}</h3>
+            <h3>Faktura VAT Nr: nextNumber</h3>
             <h3>ORYGINAŁ</h3>
-            <h4>Data wystawienia faktury: {this.state.date.toLocaleDateString()}</h4>
-            <h4>Termin płatności: {this.state.duedate} </h4>
+            <h4>Data wystawienia faktury: new Date()</h4>
+            <h4>Termin płatności: new Date(new Date().setDate(new Date().getDate() + 14)).toLocaleDateString()</h4>
         </div>;
     }
 }
