@@ -1,3 +1,9 @@
+<<<<<<< HEAD
 node_modules
 .idea
 yarn.lock
+=======
+.idea
+node_modules
+yarn.lock
+>>>>>>> 5e5728b2c9cc11967e27479007834e3593f6953b

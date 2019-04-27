@@ -52,8 +52,6 @@ class App extends React.Component {
           <Header />
           <Body />
           <Footer />
-          <br />
-          <br />
           <button type="submit">Zapisz</button>
         </form>
         <h1>Lista</h1>
