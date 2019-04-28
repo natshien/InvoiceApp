@@ -1,9 +1,3 @@
-let dane = {
-  NIP: '',
-  company: '',
-}
-
-
 export default function header(state = dane, action) {
 
   console.log(action.payload);

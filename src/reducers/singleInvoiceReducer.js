@@ -1,4 +1,8 @@
 let defaultState = {
+  payment: "",
+  company: "",
+  address: "",
+  nip: "",
   products: []
 }
 

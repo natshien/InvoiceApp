@@ -11,10 +11,13 @@ class Invoice extends Component {
     state = {
         product: {
             item: "",
-            vat: "",
             amount: "",
-            netto: ""
-    }, errors: []}
+            netto: "",
+            vat: "wrong"
+        },
+        errors: [],
+        newItemErr: []
+    }
 
     getInvoicesFromFirebase = () => {
         db.collection("invoices")
@@ -102,7 +105,7 @@ class Invoice extends Component {
         let pass = true;
         let error = []
 
-        if (this.props.single.payment === "disabled") { 
+        if (this.props.single.payment == "disabled") { 
             pass = false;
             error.push("Wybierz formę płatności");
             
@@ -119,8 +122,7 @@ class Invoice extends Component {
             
         } else if (this.props.single.nip.length < 10) {
             pass = false;
-            error.push("Nieprawidłowy NIP");
-          
+            error.push("Nieprawidłowy NIP");  
             
         }
 
@@ -159,19 +161,19 @@ class Invoice extends Component {
         if (this.state.product.item.length < 3) {
             pass = false;
             error.push("Wprowadź nazwę produktu");
-        } else if (this.state.product.amount <= 0) {
+        } else if (this.state.product.amount.length == 0) {
             pass = false;
             error.push("Podaj ilość");
-        } else if (this.state.product.netto < 2) {
+        } else if (this.state.product.netto.length < 2) {
             pass = false;
-            errorrs.push("Podaj cenę netto");
-        } else if (this.state.product.vat === "disabled") {
+            error.push("Podaj cenę netto");
+        } else if (this.state.product.vat == "wrong") {
             pass = false;
             error.push("Wybierz wartość VAT");
         }
 
         this.setState({
-            errors: error
+            newItemErr: error
         })
         
         
@@ -187,7 +189,7 @@ class Invoice extends Component {
                 product: {}
             })
         }    
-       //////////////////////////////// koniec walidacji produktu ////////////////////////////////     
+       //////////////////////////////// KONIEC WALIDACJI PRODUKTU ////////////////////////////////     
     }
 
 
@@ -196,6 +198,12 @@ class Invoice extends Component {
         let logo = "./../img/logo-pl.png";
         
         let errors = this.state.errors.map((e, i) => {
+            return <li key={i}>
+                {e}
+            </li>
+        })
+
+        let itemErrors = this.state.newItemErr.map((e, i) => {
             return <li key={i}>
                 {e}
             </li>
@@ -225,15 +233,13 @@ class Invoice extends Component {
             </h5>
         </div>
         <div className="payementOption">
-            <h4>Sposób płatności:</h4>
+            <h4>Wybierz sposób płatności:</h4>
                     <select onChange={this.handleChange} value={this.props.single.payment} name="payment" style={{ display: 'block' }}>
-                    <option value="disabled">Wybierz</option>
+                    <option  value="disabled">Wybierz</option>
                     <option value="cash">Gotówka</option>
                     <option value="card">Karta</option>
                     <option value="wire">Przelew</option>
-                </select><br/>
-                    <label>Forma płatności: {this.props.single.payment}</label><br/>
-                    <button type="submit">Wybierz</button>     
+                </select><br/> 
         </div>       
         <div className="buyerForm">
             <h4>Dane Nabywcy:</h4>
@@ -244,7 +250,10 @@ class Invoice extends Component {
             <label>NIP:</label><br/>
             <input onChange={this.handleChange} name="nip" value={this.props.single.nip}></input><br/><br/>
             <button type="submit">Zatwierdź dane</button>
-        </div>
+                </div>
+                
+                <ul>{errors}</ul> 
+                
         <br/>
         <div className="addItem">
             <label>Towar / Usługa:</label><br/>
@@ -255,14 +264,14 @@ class Invoice extends Component {
             <input onChange={this.handleChangeProd} type="number" name="netto" value={this.state.product.netto}></input><br/>
             <label>VAT:</label><br />
                 <select onChange={this.handleChangeProd} name="vat" style={{display: 'block'}} value={this.state.product.vat}>
-                    <option value="disabled">Wybierz</option>
+                    <option value="wrong">Wybierz</option>
                     <option value="5">5 %</option>
                     <option value="8">8 %</option>
                     <option value="23">23 %</option>
                 </select><br/>
                 </div> 
 
-                <ul>{errors}</ul>
+                <ul>{itemErrors}</ul>
 
                 <button onClick={this.handleSubmitProduct}>Dodaj produkt</button>
                 <br />
