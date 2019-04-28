@@ -8,7 +8,13 @@ const db = firebase.firestore();
 
 class Invoice extends Component {
 
-    state = {product: {}, errors: []}
+    state = {
+        product: {
+            item: "",
+            vat: "",
+            amount: "",
+            netto: ""
+    }, errors: []}
 
     getInvoicesFromFirebase = () => {
         db.collection("invoices")
@@ -86,33 +92,44 @@ class Invoice extends Component {
             [e.currentTarget.name]: e.currentTarget.value
         }
 
-        //if (e.currentTarget.value.length < 2) {
-            
-        //}
-        
-
         this.props.singleInvoice(invoice)
     }
 
 
-    handleSubmit = () => {
-        /////////////// WZOR DO WALIDACJI WSZYSTKICH INPUTOW ////////////
+    handleSubmit = (e) => {
+        /////////////// WALIDACJA NABYWCY ////////////
+        e.preventDefault();
         let pass = true;
-        let errors = []
+        let error = []
 
-        if (this.props.single.vat.length < 10) { 
+        if (this.props.single.payment === "disabled") { 
             pass = false;
-            error.push("błąd")
-
-
+            error.push("Wybierz formę płatności");
+            
+            
+        } else if (this.props.single.company.length < 8) {
+            pass = false;
+            error.push("Podaj pełną nazwę nabywcy");
+         
+            
+        } else if (this.props.single.address.length < 10) {
+            pass = false;
+            error.push("Podaj pełen adres");
+          
+            
+        } else if (this.props.single.nip.length < 10) {
+            pass = false;
+            error.push("Nieprawidłowy NIP");
+          
+            
         }
 
         this.setState({
             errors: error
         })
-
-
-
+        
+        
+        
         if (pass) {
             db.collection('invoices').doc(this.props.single.invoiceNumber).set({
                 ...this.props.single
@@ -123,7 +140,7 @@ class Invoice extends Component {
             })
         }
 
-      ///////////////////////  KONIEC WZORU /////////////////////
+      ///////////////////////  KONIEC WALIDACJI NABYWCY /////////////////////
     }
 
     handleChangeProd = (e) => {
@@ -132,24 +149,57 @@ class Invoice extends Component {
         //this.props.singleInvoice(invoice) 
     }
 
-    handleSubmitProduct = () => {
+    handleSubmitProduct = (e) => {
+        e.preventDefault();
 
-        let invoice = {
-            ...this.props.single,
-            products: [...this.props.single.products, this.state.product]
+    ///////////////////////////// WALIDACJA PRODUKTU //////////////////
+        let pass = true;
+        let error = []
+
+        if (this.state.product.item.length < 3) {
+            pass = false;
+            error.push("Wprowadź nazwę produktu");
+        } else if (this.state.product.amount <= 0) {
+            pass = false;
+            error.push("Podaj ilość");
+        } else if (this.state.product.netto < 2) {
+            pass = false;
+            errorrs.push("Podaj cenę netto");
+        } else if (this.state.product.vat === "disabled") {
+            pass = false;
+            error.push("Wybierz wartość VAT");
         }
-        
-        this.props.singleInvoice(invoice);
+
         this.setState({
-            product: {}
+            errors: error
         })
+        
+        
+        if (pass) {
+
+            let invoice = {
+                ...this.props.single,
+                products: [...this.props.single.products, this.state.product]
+            }
+        
+            this.props.singleInvoice(invoice);
+            this.setState({
+                product: {}
+            })
+        }    
+       //////////////////////////////// koniec walidacji produktu ////////////////////////////////     
     }
 
-   
 
     render() {
     
-    let logo = "./../img/logo-pl.png";
+        let logo = "./../img/logo-pl.png";
+        
+        let errors = this.state.errors.map((e, i) => {
+            return <li key={i}>
+                {e}
+            </li>
+        })
     
     return (
         <form onSubmit={this.handleSubmit}>
@@ -158,7 +208,7 @@ class Invoice extends Component {
     <h3>Faktura VAT Nr: {this.props.single.invoiceNumber}/{new Date().getMonth() + 1}/{new Date().getFullYear()}</h3>
         <h3>ORYGINAŁ</h3>
         <h4>Data wystawienia faktury: { (new Date()).toLocaleDateString()}</h4>
-        <h4>Termin płatności:{new Date(new Date().setDate(new Date().getDate() + 14)).toLocaleDateString()}</h4>
+        <h4>Termin płatności: {new Date(new Date().setDate(new Date().getDate() + 14)).toLocaleDateString()}</h4>
     </div>
     <div className="myFirm">
             <img src={logo} style={{ height: "100px", width: "150px", display: "block" }}></img>
@@ -177,10 +227,10 @@ class Invoice extends Component {
         <div className="payementOption">
             <h4>Sposób płatności:</h4>
                     <select onChange={this.handleChange} value={this.props.single.payment} name="payment" style={{ display: 'block' }}>
-                    <option name="disabled">Wybierz</option>
-                    <option name="cash">Gotówka</option>
-                    <option name="card">Karta</option>
-                    <option name="wire">Przelew</option>
+                    <option value="disabled">Wybierz</option>
+                    <option value="cash">Gotówka</option>
+                    <option value="card">Karta</option>
+                    <option value="wire">Przelew</option>
                 </select><br/>
                     <label>Forma płatności: {this.props.single.payment}</label><br/>
                     <button type="submit">Wybierz</button>     
@@ -196,22 +246,26 @@ class Invoice extends Component {
             <button type="submit">Zatwierdź dane</button>
         </div>
         <br/>
-        <div className="itemList">
+        <div className="addItem">
             <label>Towar / Usługa:</label><br/>
-            <input onChange={this.handleChangeProd} name="item" value={this.props.single.item}></input><br/>
+            <input onChange={this.handleChangeProd} name="item" value={this.state.product.item}></input><br/>
             <label>Ilość:</label><br/>
-            <input onChange={this.handleChangeProd} type="number" name="amount" value={this.props.single.amount}></input><br/>
+            <input onChange={this.handleChangeProd} type="number" name="amount" value={this.state.product.amount}></input><br/>
             <label>Cena netto:</label><br/>
-            <input onChange={this.handleChangeProd} type="number" name="netto" value={this.props.single.netto}></input><br />
+            <input onChange={this.handleChangeProd} type="number" name="netto" value={this.state.product.netto}></input><br/>
             <label>VAT:</label><br />
-                <select onChange={this.handleChangeProd} name="vat" style={{display: 'block'}} value={this.props.single.vat}>
-                    <option name="5">5 %</option>
-                    <option name="8">8 %</option>
-                    <option name="23">23 %</option>
+                <select onChange={this.handleChangeProd} name="vat" style={{display: 'block'}} value={this.state.product.vat}>
+                    <option value="disabled">Wybierz</option>
+                    <option value="5">5 %</option>
+                    <option value="8">8 %</option>
+                    <option value="23">23 %</option>
                 </select><br/>
-         
-                </div>    
+                </div> 
+
+                <ul>{errors}</ul>
+
                 <button onClick={this.handleSubmitProduct}>Dodaj produkt</button>
+                <br />
                 <br/>
                 <button type="submit">Wystaw fakturę</button>
             
