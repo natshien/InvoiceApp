@@ -2,18 +2,20 @@ import React, {Component} from 'react';
 import ReactDOM from 'react-dom';
 import { createStore, combineReducers } from 'redux'
 import { Provider, connect } from 'react-redux';
-import headerReducer from './reducers/headerReducer';
-import bodyReducer from './reducers/bodyReducer';
-import footerReducer from './reducers/footerReducer';
 import invoicesReducer from './reducers/invoicesReducer';
 import singleInvoiceReducer from './reducers/singleInvoiceReducer';
-import Header from './components/header/header';
-import Body from './components/body/body';
-import Footer from './components/footer/footer';
 import Invoice from './invoices/invoice';
+import MyInvoices from './invoices/myInvoices';
+import Menu from './invoices/mainMenu';
 import firebase from './config/firebase';
 const db = firebase.firestore();
-
+import {
+  BrowserRouter,
+  Route,
+  Link,
+  Switch,
+  NavLink
+} from 'react-router-dom';
 
 const reducers = combineReducers({
   invoices: invoicesReducer,
@@ -37,19 +39,19 @@ class App extends Component {
 
   render() {
 
-    if (this.state.view) {
-      return <Invoice />
-    }
-
-
     return (
       <div>
-
-        <button onClick={this.handleInovoice}>Stwórz fakturę</button>
-        
+        <BrowserRouter>
+          <Switch>
+            <Route exact path="/" component={Menu}></Route>
+            <Route exact path="/new_invoice" component={Invoice}></Route>
+            <Route exact path="/my_invoices" component={MyInvoices}></Route>
+          </Switch>
+        </BrowserRouter>        
       </div>
     )
   }
+  
 }
 
 

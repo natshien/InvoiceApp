@@ -1,8 +1,16 @@
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import firebase from '../config/firebase';
 import _ from 'lodash';
 const db = firebase.firestore();
+import {
+    HashRouter,
+    Route,
+    Link,
+    Switch,
+    NavLink
+} from 'react-router-dom';
 
 class Invoice extends Component {
 
