@@ -4,8 +4,6 @@ import firebase from '../config/firebase';
 import _ from 'lodash';
 const db = firebase.firestore();
 
-
-
 class Invoice extends Component {
 
     state = {
@@ -120,7 +118,7 @@ class Invoice extends Component {
             error.push("Podaj pełen adres");
           
             
-        } else if (this.props.single.nip.length < 10) {
+        } else if (this.props.single.nip.length !== 10) {
             pass = false;
             error.push("Nieprawidłowy NIP");  
             
@@ -161,7 +159,7 @@ class Invoice extends Component {
         if (this.state.product.item.length < 3) {
             pass = false;
             error.push("Wprowadź nazwę produktu");
-        } else if (this.state.product.amount.length == 0) {
+        } else if (this.state.product.amount.length > 2) {
             pass = false;
             error.push("Podaj ilość");
         } else if (this.state.product.netto.length < 2) {
@@ -186,7 +184,12 @@ class Invoice extends Component {
         
             this.props.singleInvoice(invoice);
             this.setState({
-                product: {}
+                product: {
+                    item: "",
+                    amount: "",
+                    netto: "",
+                    vat: "wrong"
+                }
             })
         }    
        //////////////////////////////// KONIEC WALIDACJI PRODUKTU ////////////////////////////////     
@@ -194,6 +197,7 @@ class Invoice extends Component {
 
 
     render() {
+       
     
         let logo = "./../img/logo-pl.png";
         
@@ -207,6 +211,19 @@ class Invoice extends Component {
             return <li key={i}>
                 {e}
             </li>
+        })
+
+        let addedItems = this.props.single.products.map((e, i) => {
+            return <tr key={i}>
+                <td>{e.item}</td>
+                <td>{e.amount}</td>
+                <td>szt</td>
+                <td>{e.netto}</td>
+                <td>{e.vat} %</td>
+                <td>{(e.netto * e.amount * e.vat / 100).toFixed(2)}</td>
+                <td>{(e.netto * e.amount).toFixed(2)}</td>
+                <td>{(e.amount * e.netto + (e.netto * e.amount * e.vat / 100)).toFixed(2)}</td>
+            </tr>
         })
     
     return (
@@ -275,6 +292,24 @@ class Invoice extends Component {
 
                 <button onClick={this.handleSubmitProduct}>Dodaj produkt</button>
                 <br />
+                <table style={{border: "black solid 1px"}}>
+                    <thead>
+                        <tr>
+                            <th>Towar / Usługa</th>
+                            <th>Ilość</th>
+                            <th>j.m.</th>
+                            <th>Cena netto</th>
+                            <th>Stawka VAT</th>
+                            <th>Kwota VAT</th>
+                            <th>Kwota netto</th>
+                            <th>Kwota brutto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {addedItems}
+                    </tbody>
+                </table>
+
                 <br/>
                 <button type="submit">Wystaw fakturę</button>
             
