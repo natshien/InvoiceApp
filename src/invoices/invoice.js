@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import firebase from '../config/firebase';
 import _ from 'lodash';
+import logo from './../../img/cl-logo-it.jpg';
 const db = firebase.firestore();
 import {
     HashRouter,
@@ -205,7 +206,7 @@ class Invoice extends Component {
     render() {
        
     
-        let logo = "./../img/logo-pl.png";
+        //let logo = "./../../img/logo-pl.png";  lepiej działa przez import
         
         let errors = this.state.errors.map((e, i) => {
             return <li key={i}>
@@ -242,7 +243,7 @@ class Invoice extends Component {
         <h4>Termin płatności: {new Date(new Date().setDate(new Date().getDate() + 14)).toLocaleDateString()}</h4>
     </div>
     <div className="myFirm">
-            <img src={logo} style={{ height: "100px", width: "150px", display: "block" }}></img>
+            <img src={logo} style={{ height: "150px", width: "150px", display: "block" }}></img>
             <br /> <br />
             <h3>Dane Sprzedawcy:</h3>
             <h4>Coders Lab Sp.z o.o.<br/>
