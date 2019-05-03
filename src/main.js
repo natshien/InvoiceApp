@@ -16,6 +16,7 @@ import {
   Switch,
   NavLink
 } from 'react-router-dom';
+require 
 
 const reducers = combineReducers({
   invoices: invoicesReducer,
