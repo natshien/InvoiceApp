@@ -84,10 +84,8 @@ class Invoice extends Component {
 
             });
 
-
             console.log("Data:", data);
             this.props.getInvoices(data);
-
 
         })
         .catch(function (error) {

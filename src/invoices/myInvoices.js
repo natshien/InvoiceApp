@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import firebase from '../config/firebase';
+const db = firebase.firestore();
 import {
     HashRouter,
     Route,
@@ -34,10 +35,11 @@ class MyInvoices extends Component {
             });
     }
 
+
     render() {
         
-        let allInvoices = data.map((e, i) => {
-            return <li key={i}>{e.invoiceNumber}</li>
+        let allInvoices = this.props.invoices.map((e,i) => {
+            return <li key={i}>{e.invoiceNumber}</li>          
         })
         return <ul>
             {allInvoices}
