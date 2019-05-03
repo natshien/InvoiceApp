@@ -240,7 +240,7 @@ class Invoice extends Component {
         <div className="invoice-header">
         <div className="left-side-wrapper">      
         <div className="myFirm">
-            <h3>Dane Sprzedawcy:</h3>
+            <h3>Dane Sprzedawcy:</h3><br/>
             <h4>Coders Lab Sp.z o.o.<br/>
                 ul. Prosta 51<br/>
                 00-838 Warszawa<br/>
@@ -325,7 +325,7 @@ class Invoice extends Component {
                 </div>
                 <br/>
                 <button type="submit">Wystaw fakturę</button>
-                </div>
+            </div>
                 <br />
                 <div className="invoice-bottom">
                 <div className="mySign">

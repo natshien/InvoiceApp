@@ -46,8 +46,8 @@
 }
 
 .invoice-content {
-    display: flex;
-    justify-content: center
+    display: block;
+    margin: 20px auto
 }
 
 .table-wrapper {
@@ -59,7 +59,7 @@
     text-align: center;
     display: block;
     justify-content: center;
-    margin: 50px
+    margin: 50px auto
 }
 
 .item-list tr {
@@ -105,7 +105,7 @@ ul li {
 .invoice-bottom {
     display: flex;
     justify-content: space-between;
-    margin: 0 auto;
+    margin: 50px auto;
 }
 
 .mySign {
