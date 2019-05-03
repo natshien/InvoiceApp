@@ -1,0 +1,121 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box
+}
+
+.invoice-form {
+    display: flex;
+    margin: 0 auto;
+    height: 3508px;
+    width: 2480px;
+    justify-content: center
+}
+
+.invoice-form img {
+    justify-content: flex-start;
+    margin-left: 50px;
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto
+}
+
+.left-side-wrapper {
+    align-items: flex-start;
+    margin: 0 auto
+}
+
+.right-side-wrapper {
+    align-items: flex-start;
+    margin: 0 auto
+}
+
+.addItem {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    margin: 50px;
+    padding: 10px
+}
+
+.addItem label {
+    padding: 10px
+}
+
+.invoice-content {
+    display: flex;
+    justify-content: center
+}
+
+.table-wrapper {
+    display: flex;
+    justify-self: center
+}
+
+.item-list {
+    text-align: center;
+    display: block;
+    justify-content: center;
+    margin: 50px
+}
+
+.item-list tr {
+    display: flex;
+    flex: 1
+}
+
+.item-list tr th {
+    text-align: center;
+    border: black solid 1px;
+    display: inline-block;
+    justify-content: center;
+    padding: 10px;
+}
+
+.item-list tr td {
+    text-align: center;
+    display:inline-block;
+    padding: 10px;
+    justify-content: center
+}
+
+button {
+    text-align: center;
+    width: 70px;
+    height: 50px;
+    margin: 0 auto
+}
+
+.invoice-form button {
+    text-align: center;
+    width: 70px;
+    height: 50px;
+    margin: 0 auto;
+    align-items: center
+}
+
+ul li {
+    margin: 0 auto;
+    padding: 10px;
+}
+
+.invoice-bottom {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+}
+
+.mySign {
+    text-align: center;
+    width: 300px;
+    height: 200px;
+}
+
+.clientSign {
+    text-align: center;
+    width: 300px;
+    height: 200px;
+}

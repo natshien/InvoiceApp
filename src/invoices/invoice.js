@@ -234,28 +234,25 @@ class Invoice extends Component {
         })
     
     return (
-        <form onSubmit={this.handleSubmit}>
-        <div>
-    <div className="invoiceNum"> 
-    <h3>Faktura VAT Nr: {this.props.single.invoiceNumber}/{new Date().getMonth() + 1}/{new Date().getFullYear()}</h3>
-        <h3>ORYGINAŁ</h3>
-        <h4>Data wystawienia faktury: { (new Date()).toLocaleDateString()}</h4>
-        <h4>Termin płatności: {new Date(new Date().setDate(new Date().getDate() + 14)).toLocaleDateString()}</h4>
-    </div>
-    <div className="myFirm">
+        <form className="invoice-form" onSubmit={this.handleSubmit}>
+            <div>
             <img src={logo} style={{ height: "150px", width: "150px", display: "block" }}></img>
-            <br /> <br />
+        <div className="invoice-header">
+        <div className="left-side-wrapper">      
+        <div className="myFirm">
             <h3>Dane Sprzedawcy:</h3>
             <h4>Coders Lab Sp.z o.o.<br/>
                 ul. Prosta 51<br/>
                 00-838 Warszawa<br/>
                 NIP: 5213650730<br/>   
             </h4>
+            <br/>
             <h5>
             Nr konta bankowego do przelewów:<br/>
             21 1090 1870 0000 0001 3272 1053
             </h5>
         </div>
+        <br/>
         <div className="payementOption">
             <h4>Wybierz sposób płatności:</h4>
                     <select onChange={this.handleChange} value={this.props.single.payment} name="payment" style={{ display: 'block' }}>
@@ -264,7 +261,16 @@ class Invoice extends Component {
                     <option value="card">Karta</option>
                     <option value="wire">Przelew</option>
                 </select><br/> 
-        </div>       
+        </div>
+                </div>
+        <div className="right-side-wrapper">       
+        <div className="invoiceNum"> 
+        <h3>Faktura VAT Nr: {this.props.single.invoiceNumber}/{new Date().getMonth() + 1}/{new Date().getFullYear()}</h3><br/>
+            <h3>ORYGINAŁ</h3>
+            <h4>Data wystawienia faktury: { (new Date()).toLocaleDateString()}</h4>
+            <h4>Termin płatności: {new Date(new Date().setDate(new Date().getDate() + 14)).toLocaleDateString()}</h4>
+        </div>
+        <br/>                
         <div className="buyerForm">
             <h4>Dane Nabywcy:</h4>
             <label>Nazwa firmy:</label><br/>
@@ -274,11 +280,11 @@ class Invoice extends Component {
             <label>NIP:</label><br/>
             <input onChange={this.handleChange} name="nip" value={this.props.single.nip}></input><br/><br/>
             <button type="submit">Zatwierdź dane</button>
-                </div>
-                
-                <ul>{errors}</ul> 
-                
-        <br/>
+            <ul>{errors}</ul>
+        </div>      
+        </div>
+        </div>        
+        <div className="invoice-content">      
         <div className="addItem">
             <label>Towar / Usługa:</label><br/>
             <input onChange={this.handleChangeProd} name="item" value={this.state.product.item}></input><br/>
@@ -292,35 +298,47 @@ class Invoice extends Component {
                     <option value="5">5 %</option>
                     <option value="8">8 %</option>
                     <option value="23">23 %</option>
-                </select><br/>
+                    </select><br />
+                    <ul>{itemErrors}</ul>
+                    <br />
                 </div> 
-
-                <ul>{itemErrors}</ul>
-
                 <button onClick={this.handleSubmitProduct}>Dodaj produkt</button>
                 <br />
-                <table style={{border: "black solid 1px"}}>
+                <div className="table-wrapper">
+                <table className="item-list" style={{border: "black solid 1px"}}>
                     <thead>
-                        <tr>
-                            <th>Towar / Usługa</th>
-                            <th>Ilość</th>
-                            <th>j.m.</th>
-                            <th>Cena netto</th>
-                            <th>Stawka VAT</th>
-                            <th>Kwota VAT</th>
-                            <th>Kwota netto</th>
-                            <th>Kwota brutto</th>
+                        <tr style={{border: "black solid 1px"}}>
+                            <th> Towar / Usługa </th>
+                            <th> Ilość </th>
+                            <th> j.m. </th>
+                            <th> Cena netto </th>
+                            <th> Stawka VAT </th>
+                            <th> Kwota VAT </th>
+                            <th> Kwota netto </th>
+                            <th> Kwota brutto </th>
                         </tr>
                     </thead>
                     <tbody>
                         {addedItems}
                     </tbody>
                 </table>
-
+                </div>
                 <br/>
                 <button type="submit">Wystaw fakturę</button>
+                </div>
+                <br />
+                <div className="invoice-bottom">
+                <div className="mySign">
+                    <hr /><br/>
+                    <h4>Imię i Nazwisko osoby upowaznionej<br/> do wystawienia faktury</h4>
+                </div>
+                <div className="clientSign">
+                    <hr /><br/>
+                    <h4>Imię i Nazwisko osoby upowaznionej<br/>do odbioru faktury</h4>
+                </div>
+            </div>    
+            </div>
             
-        </div>
         </form>
     )
   }
