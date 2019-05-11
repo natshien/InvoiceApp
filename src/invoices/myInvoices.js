@@ -10,7 +10,7 @@ import {
     Switch,
     NavLink
 } from 'react-router-dom';
-
+//<li key={i}><Link to="/my_invoices/${e.invoiceNumber}">{e.invoiceNumber}</Link></li> 
 
 class MyInvoices extends Component {
     
@@ -35,16 +35,24 @@ class MyInvoices extends Component {
             });
     }
 
-
     render() {
         
         let allInvoices = this.props.invoices.map((e,i) => {
-            return <li key={i}>{e.invoiceNumber}</li>          
+            return <li key={i}>
+                <h2>{e.invoiceNumber}</h2>
+                <button><Link to={`/my_invoices/${e.invoiceNumber}`}>Edytuj fakturę</Link></button><br/>
+                <button id="pdf">Generuj PDF</button><br/>
+            </li>        
         })
+        
         return <ul>
             {allInvoices}
         </ul>
-    }   
+    }
+    
+    componentDidMount() {
+        this.getInvoicesFromFirebase()
+    }
     
 }
  

@@ -9,7 +9,7 @@
     margin: 0 auto;
     height: 3508px;
     width: 2480px;
-    justify-content: center
+    justify-content: left
 }
 
 .invoice-form img {
@@ -106,6 +106,7 @@ ul li {
     display: flex;
     justify-content: space-between;
     margin: 50px auto;
+    padding: 10px
 }
 
 .mySign {
