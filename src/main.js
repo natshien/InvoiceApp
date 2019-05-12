@@ -50,7 +50,8 @@ class App extends Component {
             <Route exact path="/" component={Menu}></Route>
             <Route exact path="/new_invoice" component={Invoice}></Route>
             <Route exact path="/my_invoices" component={MyInvoices}></Route>
-            <Route exact path="/my_invoices/:slug" component={EditInvoice}></Route>
+            <Route path="/my_invoices/:slug" component={EditInvoice}></Route>
+            {/* <Route path="/my_invoices/render/:slug" component={RenderInvoice}></Route> */}
           </Switch>
         </BrowserRouter>        
       </div>

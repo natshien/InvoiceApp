@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import firebase from '../config/firebase';
 import _ from 'lodash';
 import logo from './../../img/cl-logo-it.jpg';
+import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
+import ReactPDF from '@react-pdf/renderer';
 const db = firebase.firestore();
 import {
     HashRouter,
@@ -12,6 +14,26 @@ import {
     Switch,
     NavLink
 } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
+
+
+//const MyDocument = () => (
+//    <Document>
+//      <Page size="A4">
+//        <View>
+//          <Text>Section #1</Text>
+//        </View>
+//        <View>
+//          <Text>Section #2</Text>
+//        </View>
+//      </Page>
+//    </Document>
+//);
+//<PDFViewer>
+//     
+//     <MyDocument/>
+// </PDFViewer>
+     
 
 class EditInvoice extends Component {
 
@@ -33,20 +55,19 @@ class EditInvoice extends Component {
             let data = [];
             querySnapshot.forEach((doc) => {
                 // doc.data() is never undefined for query doc snapshots
-                console.log(doc.id, " => ", doc.data());
+                //console.log(doc.id, " => ", doc.data());
                 data = [...data, doc.data()];
 
             });
 
-            console.log("Data:", data);
+            //console.log("Data:", data);
             this.props.getInvoices(data);
 
             let nextNumber = _.sortBy(data, (val) => {
-                console.log(val.invoiceNumber, val.invoiceNumber.match(/[0-9]+/)[0])
                 return Number(val.invoiceNumber.match(/[0-9]+/)[0])
             }).reverse()[0].invoiceNumber.match(/[0-9]+/)[0];
 
-            console.log("NEXT", nextNumber)
+            //console.log("NEXT", nextNumber)
 
             let next = `${Number(nextNumber) + 1}-${new Date().getMonth() + 1}${new Date().getFullYear()}`;
 
@@ -77,12 +98,12 @@ class EditInvoice extends Component {
             let data = [];
             querySnapshot.forEach((doc) => {
                 // doc.data() is never undefined for query doc snapshots
-                console.log(doc.id, " => ", doc.data());
+                //console.log(doc.id, " => ", doc.data());
                 data = [...data, doc.data()];
 
             });
 
-            console.log("Data:", data);
+            //console.log("Data:", data);
             this.props.getInvoices(data);
 
         })
@@ -103,12 +124,12 @@ class EditInvoice extends Component {
 
     handleSubmit = (e) => {
         /////////////// WALIDACJA NABYWCY ////////////
-        ///////////////  metoda Redirect z react router do submita żeby wrócić do widoku naszych invoice  ////////////
+        ///////////////  metoda Redirect z react router do submita żeby wrócić do widoku moje faktury  ////////////
         e.preventDefault();
         let pass = true;
         let error = []
 
-        if (this.props.edited.payment == "disabled") { 
+        if (this.props.edited.payment == "disabled") {
             pass = false;
             error.push("Wybierz formę płatności");
             
@@ -125,7 +146,7 @@ class EditInvoice extends Component {
             
         } else if (this.props.edited.nip.length !== 10) {
             pass = false;
-            error.push("Nieprawidłowy NIP");  
+            error.push("Nieprawidłowy NIP");
             
         }
 
@@ -145,8 +166,14 @@ class EditInvoice extends Component {
             })
         }
 
-      ///////////////////////  KONIEC WALIDACJI NABYWCY /////////////////////
+        ////////////////// REDIRECT //////////////////
+
+
+
+
     }
+      ///////////////////////  KONIEC WALIDACJI NABYWCY /////////////////////
+    
 
     handleChangeProd = (e) => {
         this.setState({ product: { ...this.state.product, [e.currentTarget.name]: e.currentTarget.value } })
@@ -184,6 +211,7 @@ class EditInvoice extends Component {
         
         if (pass) {
 
+            console.log("E", this.props.edited)
             let invoice = {
                 ...this.props.edited,
                 products: [...this.props.edited.products, this.state.product]
@@ -245,14 +273,14 @@ class EditInvoice extends Component {
         
         }
 
-        console.log("RESULT : ", result);
-        console.log("ITEMS : ", addedItems);
+        //console.log("RESULT : ", result);
+        //console.log("ITEMS : ", addedItems);
        
     
         return (
-        
-            <form className="invoice-form" onSubmit={this.handleSubmit}>
+            <div className="edit-invoice-form">
                 <h1>EDYCJA FAKTURY</h1>
+            <form className="invoice-form" onSubmit={this.handleSubmit}>
             <div>
             <img src={logo} style={{ height: "150px", width: "150px", display: "block" }}></img>
         <div className="invoice-header">
@@ -272,8 +300,8 @@ class EditInvoice extends Component {
         </div>
         <br/>
         <div className="payementOption">
-            <h4>Wybierz sposób płatności:</h4>
-                 <select onChange={this.handleChange} value={this.props.edited.payment} name="payment" style={{ display: 'block' }}>
+            <label><h4>Wybierz sposób płatności:</h4></label>
+                 <select className="payBy" onChange={this.handleChange} value={this.props.edited.payment} name="payment" style={{ display: 'block' }}>
                     <option value="disabled">Wybierz</option>
                     <option value="cash">Gotówka</option>
                     <option value="card">Karta</option>
@@ -296,8 +324,8 @@ class EditInvoice extends Component {
             <label>Adres siedziby:</label><br/>
             <textarea onChange={this.handleChange} name="address" value={this.props.edited.address}></textarea><br />
             <label>NIP:</label><br/>
-            <input onChange={this.handleChange} name="nip" value={this.props.edited.nip}></input>
-            <br /><br />
+            <input onChange={this.handleChange} name="nip" value={this.props.edited.nip}></input><br />
+            <button type="submit">Zatwierdź dane</button><br />
             <ul>{errors}</ul>
         </div>      
         </div>
@@ -317,12 +345,13 @@ class EditInvoice extends Component {
                     <option value="8">8 %</option>
                     <option value="23">23 %</option>
                     </select>
-                    <button onClick={this.handleSubmitProduct}>Dodaj produkt</button><br/>
+                    <button onClick={this.handleSubmitProduct}>Dodaj produkt</button>
+                    <br />
                     <ul>{itemErrors}</ul>
         </div> 
             <br />
                 <div className="table-wrapper">
-                <table className="item-list" style={{border: "black solid 1px"}}>
+                <table className="item-list">
                     <thead>
                         <tr style={{border: "black solid 1px"}}>
                             <th> Towar / Usługa </th>
@@ -360,10 +389,10 @@ class EditInvoice extends Component {
                     <h4>Imię i Nazwisko osoby upoważnionej<br/>do odbioru faktury</h4>
                 </div>
                 </div> 
-                <button type="submit">Zaktualizuj fakturę</button>    
+                <button className="updateInvoice" type="submit">Zaktualizuj fakturę</button>    
             </div>
-            
         </form>
+    </div>
     )
   }
     
@@ -372,15 +401,20 @@ class EditInvoice extends Component {
 
         let docRef = db.collection("invoices").doc(this.props.match.params.slug);
 
-        console.log(docRef);
+        //console.log(docRef);
 
         this.getInvoicesFromFirebase();
 
         docRef.get().then((doc) => {
 
-           if (doc.exists) {  
-      
-             this.props.editInvoice(doc.data())
+            if (doc.exists) {  
+
+                if (!doc.data().products) {
+                    this.props.editInvoice({ ...doc.data(), products: [] })
+                } else {
+                    this.props.editInvoice(doc.data())
+                }
+            
           
            } else {
       
@@ -397,6 +431,8 @@ class EditInvoice extends Component {
          });
     }
 }
+
+// ReactPDF.render(<MyDocument />, `${__dirname}/example.pdf`);
 
 function mapDispatch(dispatch) {
     return {

@@ -14,11 +14,14 @@ import {
 
 class Menu extends Component {
     render() { 
-        return <div>
-            <h2>Invoice App Menu</h2>
-            <Link to="/my_invoices">Moje faktury</Link>
+        return <div className="main-menu">
+            <h1>Invoice App</h1>
+            <hr/>
+            <br />
             <br/>
-            <Link to="/new_invoice">Wystaw nową fakturę</Link>
+            <h2><Link to="/my_invoices">Moje faktury</Link></h2> 
+            <br/>
+            <h2><Link to="/new_invoice">Wystaw nową fakturę</Link></h2>
         </div>
     
     }

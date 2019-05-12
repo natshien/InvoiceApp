@@ -1,5 +1,5 @@
 
-export default function invoices(state = false, action) {
+export default function invoices(state = {products: []}, action) {
   
       switch(action.type) {
         case 'EDIT_INVOICE':

@@ -4,6 +4,29 @@
     box-sizing: border-box
 }
 
+
+/*////////////////////////  MAIN MENU  /////////////////////*/
+
+.main-menu {
+    text-align: center;
+    padding: 100px;
+    border: rgb(255, 208, 0) solid 10px;
+    width: 600px;
+    height: 400px;
+    margin: 0 auto;
+    margin-top: 100px;
+}
+
+.main-menu hr {
+    width: 400px;
+}
+.main-menu a {
+    text-decoration: none;
+    color: black;
+}
+
+/*////////////////////////  NEW INVOICE /////////////////////*/
+
 .invoice-form {
     display: flex;
     margin: 0 auto;
@@ -28,6 +51,11 @@
     margin: 0 auto
 }
 
+.payBy {
+    height: 40px;
+    width: 80px;
+}
+
 .right-side-wrapper {
     align-items: flex-start;
     margin: 0 auto
@@ -45,57 +73,36 @@
     padding: 10px
 }
 
+.invoice-form ul {
+    list-style: none;
+}
+
 .invoice-content {
     display: block;
     margin: 20px auto
 }
 
-.table-wrapper {
-    display: flex;
-    justify-self: center
-}
 
-.item-list {
-    text-align: center;
-    display: block;
-    justify-content: center;
-    margin: 50px auto
-}
-
-.item-list tr {
-    display: flex;
-    flex: 1
-}
-
-.item-list tr th {
-    text-align: center;
+table, th {
     border: black solid 1px;
-    display: inline-block;
-    justify-content: center;
+    border-collapse: collapse;
+    text-align: center;
     padding: 10px;
+    margin: 0 auto;
 }
 
-.item-list tr td {
-    text-align: center;
-    display:inline-block;
+tfoot td {
+    border: none;
     padding: 10px;
-    justify-content: center
+    height: 15px;
 }
 
 button {
     text-align: center;
     width: 70px;
     height: 50px;
-    margin: 0 auto
 }
 
-.invoice-form button {
-    text-align: center;
-    width: 70px;
-    height: 50px;
-    margin: 0 auto;
-    align-items: center
-}
 
 ul li {
     margin: 0 auto;
@@ -106,7 +113,8 @@ ul li {
     display: flex;
     justify-content: space-between;
     margin: 50px auto;
-    padding: 10px
+    padding: 10px;
+    padding-bottom: 0
 }
 
 .mySign {
@@ -119,4 +127,56 @@ ul li {
     text-align: center;
     width: 300px;
     height: 200px;
+}
+
+.issueInvoice {
+    width: 200px;
+    height: 70px;
+    margin-left: 460px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+/*/////////////////////////////// MY INVOICES ///////////////////////////*/
+
+.my-invoices-list > h1 {
+    text-align: center;
+    padding: 50px;
+}
+
+.invoice-listing {
+    width: 145px;
+    height: 105px;
+    margin-left: 50px;
+}
+
+.invoice-listing h2 {
+    text-align: center;
+}
+
+/*///////////////////////////// EDIT INVOICE ///////////////////////////*/
+
+.edit-invoice-form > h1 {
+    text-align: center;
+    padding: 50px;
+}
+
+.updateInvoice {
+    width: 200px;
+    height: 70px;
+    margin-left: 460px;
+    font-size: 16px;
+    font-weight: 400;
+}
+
+.edit-invoice-form .invoice-bottom {
+    display: flex;
+    justify-content: space-between;
+    margin: 50px auto;
+    padding: 10px;
+    padding-bottom: 0
+}
+
+.edit-invoice-form ul {
+    list-style: none;
 }

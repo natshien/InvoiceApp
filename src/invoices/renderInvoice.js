@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import firebase from '../config/firebase';
 import _ from 'lodash';
 import logo from './../../img/cl-logo-it.jpg';
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 const db = firebase.firestore();
 import {
     HashRouter,
@@ -12,8 +13,9 @@ import {
     Switch,
     NavLink
 } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 
-class Invoice extends Component {
+class RenderInvoice extends Component {
 
     state = {
         product: {
@@ -38,12 +40,10 @@ class Invoice extends Component {
 
             });
 
-
-            console.log("Data:", data);
+            //console.log("Data:", data);
             this.props.getInvoices(data);
 
             let nextNumber = _.sortBy(data, (val) => {
-                console.log(val.invoiceNumber, val.invoiceNumber.match(/[0-9]+/)[0])
                 return Number(val.invoiceNumber.match(/[0-9]+/)[0])
             }).reverse()[0].invoiceNumber.match(/[0-9]+/)[0];
 
@@ -51,11 +51,9 @@ class Invoice extends Component {
 
             let next = `${Number(nextNumber) + 1}-${new Date().getMonth() + 1}${new Date().getFullYear()}`;
 
-            console.log(next)
-
-            this.props.singleInvoice({
+            this.props.editInvoice({
                 products: [],
-                ...this.props.single,
+                ...this.props.edited,
                 invoiceNumber: next
             })
 
@@ -85,7 +83,7 @@ class Invoice extends Component {
 
             });
 
-            console.log("Data:", data);
+            //console.log("Data:", data);
             this.props.getInvoices(data);
 
         })
@@ -96,38 +94,39 @@ class Invoice extends Component {
 
     handleChange = (e) => {
         let invoice = {
-            ...this.props.single,
+            ...this.props.edited,
             [e.currentTarget.name]: e.currentTarget.value
         }
 
-        this.props.singleInvoice(invoice)
+        this.props.editInvoice(invoice)
     }
 
 
     handleSubmit = (e) => {
         /////////////// WALIDACJA NABYWCY ////////////
+        ///////////////  metoda Redirect z react router do submita żeby wrócić do widoku moje faktury  ////////////
         e.preventDefault();
         let pass = true;
         let error = []
 
-        if (this.props.single.payment == "disabled") { 
+        if (this.props.edited.payment == "disabled") {
             pass = false;
             error.push("Wybierz formę płatności");
             
             
-        } else if (this.props.single.company.length < 8) {
+        } else if (this.props.edited.company.length < 8) {
             pass = false;
             error.push("Podaj pełną nazwę nabywcy");
          
             
-        } else if (this.props.single.address.length < 10) {
+        } else if (this.props.edited.address.length < 10) {
             pass = false;
             error.push("Podaj pełen adres");
           
             
-        } else if (this.props.single.nip.length !== 10) {
+        } else if (this.props.edited.nip.length !== 10) {
             pass = false;
-            error.push("Nieprawidłowy NIP");  
+            error.push("Nieprawidłowy NIP");
             
         }
 
@@ -138,8 +137,8 @@ class Invoice extends Component {
         
         
         if (pass) {
-            db.collection('invoices').doc(this.props.single.invoiceNumber).set({
-                ...this.props.single
+            db.collection('invoices').doc(this.props.edited.invoiceNumber).set({
+                ...this.props.edited
             }).then((res) => {
                 this.syncInvoicesFromFirebase()
             }).catch(err => {
@@ -147,13 +146,19 @@ class Invoice extends Component {
             })
         }
 
-      ///////////////////////  KONIEC WALIDACJI NABYWCY /////////////////////
+        ////////////////// REDIRECT //////////////////
+
+
+
+
     }
+      ///////////////////////  KONIEC WALIDACJI NABYWCY /////////////////////
+    
 
     handleChangeProd = (e) => {
         this.setState({ product: { ...this.state.product, [e.currentTarget.name]: e.currentTarget.value } })
 
-        //this.props.singleInvoice(invoice) 
+        //this.props.editInvoice(invoice) 
     }
 
     handleSubmitProduct = (e) => {
@@ -161,7 +166,9 @@ class Invoice extends Component {
 
     ///////////////////////////// WALIDACJA PRODUKTU //////////////////
         let pass = true;
-        let error = []
+        let error = [];
+
+        console.log("dddddddddddddd")
 
         if (this.state.product.item.length < 3) {
             pass = false;
@@ -184,12 +191,13 @@ class Invoice extends Component {
         
         if (pass) {
 
+            console.log("E", this.props.edited)
             let invoice = {
-                ...this.props.single,
-                products: [...this.props.single.products, this.state.product]
+                ...this.props.edited,
+                products: [...this.props.edited.products, this.state.product]
             }
         
-            this.props.singleInvoice(invoice);
+            this.props.editInvoice(invoice);
             this.setState({
                 product: {
                     item: "",
@@ -204,7 +212,11 @@ class Invoice extends Component {
 
 
     render() {
-                
+
+        if (!this.props.edited) {
+            return null;
+        }
+        
         let errors = this.state.errors.map((e, i) => {
             return <li key={i}>
                 {e}
@@ -215,29 +227,43 @@ class Invoice extends Component {
             return <li key={i}>
                 {e}
             </li>
-        })
+        });
 
-        let addedItems = this.props.single.products.map((e, i) => {
-            return <tr key={i}>
-                <td>{e.item}</td>
-                <td>{e.amount}</td>
-                <td>szt</td>
-                <td>{e.netto}</td>
-                <td>{e.vat} %</td>
-                <td>{(e.netto * e.amount * e.vat / 100).toFixed(2)}</td>
-                <td>{(e.netto * e.amount).toFixed(2)}</td>
-                <td>{(e.amount * e.netto + (e.netto * e.amount * e.vat / 100)).toFixed(2)}</td>
-            </tr>
-        })
-
+        let addedItems = [];
         let result = 0;
 
-        this.props.single.products.forEach((e, i) => {
-            result+= Number((e.amount * e.netto + (e.netto * e.amount * e.vat / 100)).toFixed(2))
-        })
+        if (this.props.edited.products) {
+            
+            addedItems = this.props.render.products.map((e, i) => {
+                return <tr key={i}>
+                    <td>{e.item}</td>
+                    <td>{e.amount}</td>
+                    <td>szt</td>
+                    <td>{e.netto}</td>
+                    <td>{e.vat} %</td>
+                    <td>{(e.netto * e.amount * e.vat / 100).toFixed(2)}</td>
+                    <td>{(e.netto * e.amount).toFixed(2)}</td>
+                    <td>{(e.amount * e.netto + (e.netto * e.amount * e.vat / 100)).toFixed(2)}</td>
+                </tr>
+            }) // TRZEBA BĘDZIE ZROBIĆ TO NA STATE JAKO CONTENT EDITABLE
+        
+            this.props.edited.products.forEach((e, i) => {
+                result+= Number((e.amount * e.netto + (e.netto * e.amount * e.vat / 100)).toFixed(2))
+            })
+        
+        }
+
+        //console.log("RESULT : ", result);
+        //console.log("ITEMS : ", addedItems);
+       
     
-    return (
-        <form className="invoice-form" onSubmit={this.handleSubmit}>
+        return (
+            <div className="edit-invoice-form">
+                
+    
+
+
+            <form className="invoice-form" onSubmit={this.handleSubmit}>
             <div>
             <img src={logo} style={{ height: "150px", width: "150px", display: "block" }}></img>
         <div className="invoice-header">
@@ -258,7 +284,7 @@ class Invoice extends Component {
         <br/>
         <div className="payementOption">
             <label><h4>Wybierz sposób płatności:</h4></label>
-                 <select className="payBy" onChange={this.handleChange} value={this.props.single.payment} name="payment" style={{ display: 'block' }}>
+                 <select className="payBy" onChange={this.handleChange} value={this.props.edited.payment} name="payment" style={{ display: 'block' }}>
                     <option value="disabled">Wybierz</option>
                     <option value="cash">Gotówka</option>
                     <option value="card">Karta</option>
@@ -268,7 +294,7 @@ class Invoice extends Component {
                 </div>
         <div className="right-side-wrapper">       
         <div className="invoiceNum"> 
-        <h3>Faktura VAT Nr: {this.props.single.invoiceNumber}/{new Date().getMonth() + 1}/{new Date().getFullYear()}</h3><br/>
+        <h3>Faktura VAT Nr: {this.props.edited.invoiceNumber}/{new Date().getMonth() + 1}/{new Date().getFullYear()}</h3><br/>
             <h3>ORYGINAŁ</h3>
             <h4>Data wystawienia faktury: { (new Date()).toLocaleDateString()}</h4>
             <h4>Termin płatności: {new Date(new Date().setDate(new Date().getDate() + 14)).toLocaleDateString()}</h4>
@@ -277,38 +303,20 @@ class Invoice extends Component {
         <div className="buyerForm">
             <h3>Dane Nabywcy:</h3><br/>
             <label>Nazwa firmy:</label><br/>
-            <input onChange={this.handleChange} name="company" value={this.props.single.company}></input><br/>
+            <input onChange={this.handleChange} name="company" value={this.props.edited.company}></input><br/>
             <label>Adres siedziby:</label><br/>
-            <textarea onChange={this.handleChange} name="address" value={this.props.single.address}></textarea><br />
+            <textarea onChange={this.handleChange} name="address" value={this.props.edited.address}></textarea><br />
             <label>NIP:</label><br/>
-            <input onChange={this.handleChange} name="nip" value={this.props.single.nip}></input><br/><br/>
-            <button type="submit">Zatwierdź dane</button>
+            <input onChange={this.handleChange} name="nip" value={this.props.edited.nip}></input><br />
+            <button type="submit">Zatwierdź dane</button><br />
             <ul>{errors}</ul>
         </div>      
         </div>
         </div>        
         <div className="invoice-content">      
-        <div className="addItem">
-            <label>Towar / Usługa:</label><br/>
-            <input onChange={this.handleChangeProd} name="item" value={this.state.product.item}></input><br/>
-            <label>Ilość:</label><br/>
-            <input onChange={this.handleChangeProd} type="number" name="amount" value={this.state.product.amount}></input><br/>
-            <label>Cena netto:</label><br/>
-            <input onChange={this.handleChangeProd} type="number" name="netto" value={this.state.product.netto}></input><br/>
-            <label>VAT:</label><br />
-                <select onChange={this.handleChangeProd} name="vat" style={{display: 'block'}} value={this.state.product.vat}>
-                    <option value="wrong">Wybierz</option>
-                    <option value="5">5 %</option>
-                    <option value="8">8 %</option>
-                    <option value="23">23 %</option>
-                    </select>
-                    <button onClick={this.handleSubmitProduct}>Dodaj produkt</button><br/>
-                    <ul>{itemErrors}</ul>
-                </div> 
-               
-                <br />
+            <br />
                 <div className="table-wrapper">
-                <table className="item-list" style={{border: "black solid 1px"}}>
+                <table className="item-list">
                     <thead>
                         <tr style={{border: "black solid 1px"}}>
                             <th> Towar / Usługa </th>
@@ -321,18 +329,18 @@ class Invoice extends Component {
                             <th> Kwota brutto </th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {addedItems}       
+                    <tbody>          
+                            {addedItems}                                                               
                     </tbody>
                         <tfoot>
                             <tr id="total">
                             <td colSpan="6">RAZEM</td>
-                            <td colSpan="2">{result} PLN</td>
+                            <td colSpan="2">{result.toFixed(2)} PLN</td>
                         </tr>
                     </tfoot>
                 </table>
                 </div>
-                <br/>
+                <br/>    
             </div>
                 <br />
                 <div className="invoice-bottom">
@@ -345,15 +353,49 @@ class Invoice extends Component {
                     <h4>Imię i Nazwisko osoby upoważnionej<br/>do odbioru faktury</h4>
                 </div>
                 </div> 
-                <button className="issueInvoice" type="submit">Wystaw fakturę</button>    
+                <button className="updateInvoice" type="submit">Zaktualizuj fakturę</button>    
             </div>
-            
         </form>
+    </div>
     )
   }
     
     componentDidMount() {
-       this.getInvoicesFromFirebase()
+        
+
+        let docRef = db.collection("invoices").doc(this.props.match.params.slug);
+
+        console.log(docRef);
+
+        this.getInvoicesFromFirebase();
+
+        docRef.get().then((doc) => {
+
+            if (doc.exists) {  
+
+                if (!doc.data().products) {
+                    this.props.editInvoice({ ...doc.data(), products: [] })
+                } else {
+                    this.props.editInvoice(doc.data())
+                }
+               
+
+      
+             
+          
+           } else {
+      
+             // doc.data() will be undefined in this case
+      
+             console.log("No such document!");
+      
+           }
+      
+        }).catch(function(error) {
+      
+           console.log("Error getting document:", error);
+      
+         });
     }
 }
 
@@ -362,8 +404,8 @@ function mapDispatch(dispatch) {
         getInvoices: function (data) {
            dispatch({type: "GET_INVOICES", payload: data}) 
         },
-        singleInvoice: function (data) {
-            dispatch({type: "SET_SINGLE", payload: data}) 
+        editInvoice: function (data) {
+           dispatch({type: "EDIT_INVOICE", payload: data})
         }
     }
 }
@@ -371,8 +413,8 @@ function mapDispatch(dispatch) {
 function mapStateToProps(state) {
     return {
         invoices: state.invoices,
-        single: state.single
+        edited: state.edited
     }
 }
 
-export default connect(mapStateToProps, mapDispatch)(Invoice)
+export default connect(mapStateToProps, mapDispatch)(EditInvoice)

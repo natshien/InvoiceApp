@@ -10,7 +10,7 @@ import {
     Switch,
     NavLink
 } from 'react-router-dom';
-//<li key={i}><Link to="/my_invoices/${e.invoiceNumber}">{e.invoiceNumber}</Link></li> 
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
 class MyInvoices extends Component {
     
@@ -39,15 +39,21 @@ class MyInvoices extends Component {
         
         let allInvoices = this.props.invoices.map((e,i) => {
             return <li key={i}>
+                <div className="invoice-listing">
                 <h2>{e.invoiceNumber}</h2>
-                <button><Link to={`/my_invoices/${e.invoiceNumber}`}>Edytuj fakturę</Link></button><br/>
-                <button id="pdf">Generuj PDF</button><br/>
+                <button><Link to={`/my_invoices/${e.invoiceNumber}`}>Edytuj fakturę</Link></button>
+                <button id="pdf"><Link to={`/my_invoices/render/${e.invoiceNumber}`}>Podgląd w PDF</Link></button><br />
+                </div>
             </li>        
         })
         
-        return <ul>
+        return <div className="my-invoices-list">
+            <h1>MOJE FAKTURY</h1>
+            <ul>
             {allInvoices}
-        </ul>
+            </ul>
+         </div>
+        
     }
     
     componentDidMount() {
