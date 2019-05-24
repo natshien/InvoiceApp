@@ -6,9 +6,9 @@ Tools:
 - React
 - React Router
 - Redux
-- firebase
-- lodash
-- react pdf
-- css
+- Firebase
+- Lodash
+- React PDF
+- CSS
 
 Work in progress 
